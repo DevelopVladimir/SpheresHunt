@@ -35,7 +35,11 @@ public class SpheresGenerator {
 		return sphere;
 	}
 	public void ResetSphere(GameObject sphere){
+		Renderer rend;
+
 		sphere.SetActive (false);
+		rend = sphere.GetComponent<Renderer>();
+		rend.material.color = Color.red;
 		Transform trans = sphere.transform;
 		Vector3 startPos = new Vector3(Random.Range (0,spheresGenSizes.x),0,Random.Range (0,spheresGenSizes.z));
 		trans.localPosition = startPos;

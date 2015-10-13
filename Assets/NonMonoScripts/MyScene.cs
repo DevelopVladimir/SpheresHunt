@@ -14,13 +14,12 @@ public class MyScene {
 
 	public MyScene (int _width){
 		width = _width;
-		Vector3 camPosition;
+
 
 		depth = width*4/5;
 		height = depth*2;
 		
-		camPosition = new Vector3(0,width*2/5, -width*19.5f/40);
-		Camera.main.transform.position = camPosition;
+
 		
 		Walls = new GameObject();
 		Walls.name = "Walls";
