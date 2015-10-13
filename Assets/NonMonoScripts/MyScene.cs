@@ -3,15 +3,17 @@ using System.Collections;
 
 public class MyScene {
 
-	public GameObject walls;
-	public GameObject leftWall;
-	public GameObject rightWall;
-	public GameObject backWall;
-	public GameObject floor;
+	public GameObject Walls { get; private set;}
+	public GameObject LeftWall{ get; private set;}
+	public GameObject RightWall{ get; private set;}
+	public GameObject BackWall{ get; private set;}
+	public GameObject Floor{ get; private set;}
+	public readonly int width;
+	public readonly int depth;
+	public readonly int height;
 
-	public MyScene (int width){
-		int depth;
-		int height;
+	public MyScene (int _width){
+		width = _width;
 		Vector3 camPosition;
 
 		depth = width*4/5;
@@ -20,15 +22,15 @@ public class MyScene {
 		camPosition = new Vector3(0,width*2/5, -width*19.5f/40);
 		Camera.main.transform.position = camPosition;
 		
-		walls = new GameObject();
-		walls.name = "Walls";
-		Transform wallsTrans = walls.GetComponent<Transform>();
-		walls.isStatic = true;
+		Walls = new GameObject();
+		Walls.name = "Walls";
+		Transform wallsTrans = Walls.GetComponent<Transform>();
+		Walls.isStatic = true;
 		
-		leftWall = CreateWall ("LeftWall", wallsTrans, new Vector3(- width / 2, height / 2, depth / 2), new Vector3 (0, 90, 0), height, depth );
-		rightWall = CreateWall ("RightWall", wallsTrans, new Vector3(width / 2, height / 2, depth / 2), new Vector3 (0, 270, 0), height, depth );
-		backWall = CreateWall ("BackWall", wallsTrans, new Vector3(0, height / 2, depth), new Vector3 (0, 180, 0), height, width );
-		floor = CreateWall ("Floor", wallsTrans, new Vector3(0, 0, depth/2), new Vector3 (270, 0, 0), depth, width );
+		LeftWall = CreateWall ("LeftWall", wallsTrans, new Vector3(- width / 2, height / 2, depth / 2), new Vector3 (0, 90, 0), height, depth );
+		RightWall = CreateWall ("RightWall", wallsTrans, new Vector3(width / 2, height / 2, depth / 2), new Vector3 (0, 270, 0), height, depth );
+		BackWall = CreateWall ("BackWall", wallsTrans, new Vector3(0, height / 2, depth), new Vector3 (0, 180, 0), height, width );
+		Floor = CreateWall ("Floor", wallsTrans, new Vector3(0, 0, depth/2), new Vector3 (270, 0, 0), depth, width );
 
 	}
 
