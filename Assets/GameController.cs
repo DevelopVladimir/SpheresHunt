@@ -8,17 +8,20 @@ public class GameController : MonoBehaviour {
 	public readonly int sphereSize = 3;
 	int spBufferSize = 10;
 	MyScene sc;
+	MyUI ui;
 	public SpheresGenerator sg;
 	float period = 0.5f;
 	public int spehereGenSize = 30;
 	public float baseSpeed;
 	Camera cam;
 	float timer;
+	int tempTimer;
 	public int score;
 
 	void Awake () {
 		sc = new MyScene (width);
 		sg = new SpheresGenerator(new Vector3 (-15,sc.height,0),new Vector3 (spehereGenSize, sc.height,spehereGenSize ), sphereSize, spBufferSize);
+		ui = new MyUI ();
 		baseSpeed = 5;
 		height = sc.height;
 
@@ -27,6 +30,7 @@ public class GameController : MonoBehaviour {
 		cam.transform.position = camPosition;
 		timer = 0;
 		score = 0;
+		tempTimer = 0;
 	}
 
 	void Start(){
@@ -35,7 +39,7 @@ public class GameController : MonoBehaviour {
 
 	void Update(){
 		Fire ();
-		timer += Time.deltaTime;
+		UpdateTime ();
 	}
 
 	void Fire (){
@@ -46,15 +50,23 @@ public class GameController : MonoBehaviour {
 			if (Physics.Raycast(ray, out hit)) {
 				sphere = hit.collider.gameObject;
 				score += Mathf.RoundToInt(sphere.transform.localPosition.z);
+				ui.scoreT.text = "Score: "+score;
 				sg.ResetSphere(sphere);
 			}
+		}
+	}
+	void UpdateTime(){
+		timer += Time.deltaTime;
+		if (timer - tempTimer > 1) {
+			tempTimer++;
+			ui.AddSeconds();
 		}
 	}
 
 
 	IEnumerator PushSpheres(){
 		while(true){
-			for (int i =0;  i < spBufferSize; i++){
+			for (int i = 0;  i < spBufferSize; i++){
 				sg.Push(i);
 				yield return new WaitForSeconds(period);
 			}
