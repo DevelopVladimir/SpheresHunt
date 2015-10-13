@@ -26,20 +26,28 @@ public class SpheresGenerator {
 	private  GameObject GenNewSphere(){
 
 		GameObject sphere = GameObject.CreatePrimitive (PrimitiveType.Sphere);
-		sphere.SetActive (false);
-		//MeshRenderer meshRen = sphere.GetComponent<MeshRenderer> ();
 		sphere.name = "farik";
 		Transform trans = sphere.transform;
 		trans.SetParent (spheresHolderTrans, false);
-		Vector3 startPos = new Vector3(Random.Range (0,spheresGenSizes.x),0,Random.Range (0,spheresGenSizes.z));
-		trans.localPosition = startPos;
 		trans.localScale = new Vector3 (sphereSize, sphereSize, sphereSize);
 		sphere.AddComponent<SphereController>();
-		SphereController sCtrl = sphere.GetComponent<SphereController> ();
+		ResetSphere (sphere);
 		return sphere;
 	}
+	public void ResetSphere(GameObject sphere){
+		sphere.SetActive (false);
+		Transform trans = sphere.transform;
+		Vector3 startPos = new Vector3(Random.Range (0,spheresGenSizes.x),0,Random.Range (0,spheresGenSizes.z));
+		trans.localPosition = startPos;
+		SphereController sCtrl = sphere.GetComponent<SphereController> ();
+		sCtrl.enabled = false;
+	}
+
 	public void Push(int i){
 		spBuffer [i].SetActive(true);
+		spBuffer[i].GetComponent<SphereController>().enabled = true;
 	}
+
+
 
 }
