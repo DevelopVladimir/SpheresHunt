@@ -63,9 +63,8 @@ public class MyUI {
 
 		GameObject canvasObject = new GameObject("Canvas");
 		canvasObject.layer = LayerUI;
-		
-		/*RectTransform canvasTrans = */canvasObject.AddComponent<RectTransform>();
-		
+		canvasObject.AddComponent<RectTransform>();
+
 		Canvas canvas = canvasObject.AddComponent<Canvas>();
 		canvas.renderMode = RenderMode.ScreenSpaceOverlay;
 		canvas.pixelPerfect = true;
@@ -73,9 +72,6 @@ public class MyUI {
 		CanvasScaler canvasScal = canvasObject.AddComponent<CanvasScaler>();
 		canvasScal.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
 		canvasScal.referenceResolution = new Vector2(800, 600);
-		
-		//GraphicRaycaster canvasRayc = canvasObject.AddComponent<GraphicRaycaster>();
-		
 		canvasObject.transform.SetParent(parent);
 		
 		return canvasObject;
@@ -105,7 +101,7 @@ public class MyUI {
 		trans.localScale = new Vector3(1.0f, 1.0f, 1.0f);
 		trans.localPosition.Set(0, 0, 0);
 		
-		/*CanvasRenderer renderer = */textObject.AddComponent<CanvasRenderer>();
+		textObject.AddComponent<CanvasRenderer>();
 		
 		Text text = textObject.AddComponent<Text>();
 		text.supportRichText = true;

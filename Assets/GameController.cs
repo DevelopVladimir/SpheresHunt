@@ -6,7 +6,7 @@ public class GameController : MonoBehaviour {
 	public readonly int width = 40;
 	public int height;
 	public readonly int sphereSize = 3;
-	int spBufferSize = 10;
+	int spBufferSize = 16;
 	MyScene sc;
 	MyUI ui;
 	public SpheresGenerator sg;
@@ -20,9 +20,10 @@ public class GameController : MonoBehaviour {
 
 	void Awake () {
 		sc = new MyScene (width);
+
 		sg = new SpheresGenerator(new Vector3 (-15,sc.height,0),new Vector3 (spehereGenSize, sc.height,spehereGenSize ), sphereSize, spBufferSize);
 		ui = new MyUI ();
-		baseSpeed = 5;
+		baseSpeed = 3;
 		height = sc.height;
 
 		Vector3 camPosition = new Vector3(0,width*2/5, -width*19.5f/40);
@@ -34,10 +35,12 @@ public class GameController : MonoBehaviour {
 	}
 
 	void Start(){
+
 		StartCoroutine ("PushSpheres");
 	}
 
 	void Update(){
+
 		Fire ();
 		UpdateTime ();
 	}
@@ -60,6 +63,7 @@ public class GameController : MonoBehaviour {
 		if (timer - tempTimer > 1) {
 			tempTimer++;
 			ui.AddSeconds();
+			baseSpeed = tempTimer / 60 + 3;
 		}
 	}
 

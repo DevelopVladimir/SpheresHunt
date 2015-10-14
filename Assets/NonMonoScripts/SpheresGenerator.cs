@@ -26,7 +26,7 @@ public class SpheresGenerator {
 	private  GameObject GenNewSphere(){
 
 		GameObject sphere = GameObject.CreatePrimitive (PrimitiveType.Sphere);
-		sphere.name = "farik";
+		sphere.name = "Farik";
 		Transform trans = sphere.transform;
 		trans.SetParent (spheresHolderTrans, false);
 		trans.localScale = new Vector3 (sphereSize, sphereSize, sphereSize);
