@@ -110,7 +110,7 @@ public class MyUI {
 		text.font = Resources.GetBuiltinResource(typeof(Font), "Arial.ttf") as Font;
 		text.alignment = TextAnchor.MiddleCenter;
 		text.horizontalOverflow = HorizontalWrapMode.Overflow;
-		text.color = new Color(0, 0, 1);
+		text.color = Color.green;
 		
 		return textObject;
 	}

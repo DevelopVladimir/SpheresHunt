@@ -36,10 +36,13 @@ public class SpheresGenerator {
 	}
 	public void ResetSphere(GameObject sphere){
 		Renderer rend;
-
-		sphere.SetActive (false);
+		MeshRenderer meshRen = sphere.GetComponent<MeshRenderer> ();
+		meshRen.enabled = false;
+		//sphere.SetActive (false);
 		rend = sphere.GetComponent<Renderer>();
-		rend.material.color = Color.red;
+		Vector3 v = Random.onUnitSphere;
+		Color col = new Color (v.x,v.y,v.z);
+		rend.material.color = col;
 		Transform trans = sphere.transform;
 		Vector3 startPos = new Vector3(Random.Range (0,spheresGenSizes.x),0,Random.Range (0,spheresGenSizes.z));
 		trans.localPosition = startPos;
@@ -48,7 +51,8 @@ public class SpheresGenerator {
 	}
 
 	public void Push(int i){
-		spBuffer [i].SetActive(true);
+		//spBuffer [i].SetActive(true);
+		spBuffer [i].GetComponent<MeshRenderer>().enabled = true;;
 		spBuffer[i].GetComponent<SphereController>().enabled = true;
 	}
 
