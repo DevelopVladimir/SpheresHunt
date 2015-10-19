@@ -20,13 +20,13 @@ public class SpheresGenerator {
 		spheresHolderTrans = SpheresHolder.GetComponent<Transform>();
 		spheresHolderTrans.position = spheresStartPos;
 		for (int i = 0; i < spBuffer.Length; i++)
-			spBuffer [i] = GenNewSphere ();
+			spBuffer [i] = GenNewSphere (i);
 	}
 
-	private  GameObject GenNewSphere(){
+	private  GameObject GenNewSphere(int i){
 
 		GameObject sphere = GameObject.CreatePrimitive (PrimitiveType.Sphere);
-		sphere.name = "Farik";
+		sphere.name = "Farik"+i;
 		Transform trans = sphere.transform;
 		trans.SetParent (spheresHolderTrans, false);
 		trans.localScale = new Vector3 (sphereSize, sphereSize, sphereSize);
@@ -38,22 +38,34 @@ public class SpheresGenerator {
 		Renderer rend;
 		MeshRenderer meshRen = sphere.GetComponent<MeshRenderer> ();
 		meshRen.enabled = false;
-		//sphere.SetActive (false);
 		rend = sphere.GetComponent<Renderer>();
-		Vector3 v = Random.onUnitSphere;
-		Color col = new Color (v.x,v.y,v.z);
-		rend.material.color = col;
 		Transform trans = sphere.transform;
 		Vector3 startPos = new Vector3(Random.Range (0,spheresGenSizes.x),0,Random.Range (0,spheresGenSizes.z));
 		trans.localPosition = startPos;
 		SphereController sCtrl = sphere.GetComponent<SphereController> ();
 		sCtrl.enabled = false;
+		rend.material.mainTexture = GenTexture (256,true);
 	}
 
 	public void Push(int i){
 		//spBuffer [i].SetActive(true);
 		spBuffer [i].GetComponent<MeshRenderer>().enabled = true;;
 		spBuffer[i].GetComponent<SphereController>().enabled = true;
+	}
+
+	public Texture2D GenTexture(int size, bool horizont){
+		Texture2D myTex;
+		myTex = new Texture2D (size,size);
+		Vector3 v = Random.onUnitSphere;
+		Color col = new Color (v.x,v.y,v.z);
+
+		for (int i = 0; i < size; i++) {
+			for (int j = 0; j < size; j++) {
+				myTex.SetPixel (i, j, Color.Lerp(col, Color.white,((float)((horizont)?i:j))/size)); 
+			}
+		} 
+		myTex.Apply ();
+		return myTex;
 	}
 
 
