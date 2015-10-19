@@ -26,9 +26,9 @@ namespace SpheresHunt{
 			spheresHolderTrans.position = spheresStartPos;
 			
 			gc.isTexGradientHorizontal = (gc.level%2 == 0)?true:false;
-			for (int i = 0; i < gc.texstures[0].Length; i++) {
+			for (int i = 0; i < gc.textures[0].Length; i++) {
 				int power = (int)Mathf.Pow(2,i/4 + 5);
-				gc.texstures [0] [i] = GenTexture (power,gc.isTexGradientHorizontal);
+				gc.textures [0] [i] = GenTexture (power,gc.isTexGradientHorizontal);
 			}
 
 			for (int i = 0; i < spBuffer.Length; i++)
@@ -60,10 +60,10 @@ namespace SpheresHunt{
 			sCtrl.enabled = false; 
 			float normalDepth = trans.localPosition.z / spheresGenSizes.z;
 			
-			if (normalDepth > 0.75)	rend.material.mainTexture = gc.texstures [gc.level % 2] [Random.Range (0, 3)];
-			else if (normalDepth > 0.5) rend.material.mainTexture = gc.texstures [gc.level % 2] [Random.Range (4, 7)];
-			else if (normalDepth > 0.25) rend.material.mainTexture = gc.texstures [gc.level % 2] [Random.Range (8, 11)];
-			else rend.material.mainTexture = gc.texstures [gc.level % 2] [Random.Range (12, 15)];
+			if (normalDepth > 0.75)	rend.material.mainTexture = gc.textures [gc.level % 2] [Random.Range (0, 3)];
+			else if (normalDepth > 0.5) rend.material.mainTexture = gc.textures [gc.level % 2] [Random.Range (4, 7)];
+			else if (normalDepth > 0.25) rend.material.mainTexture = gc.textures [gc.level % 2] [Random.Range (8, 11)];
+			else rend.material.mainTexture = gc.textures [gc.level % 2] [Random.Range (12, 15)];
 		}
 		
 		public void Push(int i){
@@ -81,7 +81,7 @@ namespace SpheresHunt{
 			
 			for (int i = 0; i < size; i++)
 				for (int j = 0; j < size; j++) {
-					myTex.SetPixel (i, j, Color.Lerp(col, Color.white,((horizont)?(float)i/size:(float)j/size+0.2f))); 
+				myTex.SetPixel (i, j, Color.Lerp(col, (horizont)? Color.white: Color.red,((horizont)?(float)i/size:(float)j/size))); 
 				}
  
 			myTex.Apply ();

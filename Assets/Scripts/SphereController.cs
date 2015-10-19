@@ -7,21 +7,21 @@ namespace SpheresHunt{
 
 		Transform trans;
 		public float speed;
-		GameController gameController;
+		GameController gc;
 		float angleSpeed = 90;
 
 		void OnEnable () {
 
 			trans = gameObject.GetComponent<Transform> ();
-			gameController = GameObject.Find ("Management").GetComponent<GameController> ();
-			speed = gameController.baseSpeed *(1 + 6*trans.localPosition.z/gameController.spehereGenSize);
+			gc = GameObject.Find ("Management").GetComponent<GameController> ();
+			speed = gc.baseSpeed *(1 + 6*trans.localPosition.z/gc.spehereGenSize);
 		}
 		
 		void Update () {
 
 			trans.Translate (Vector3.down * speed * Time.deltaTime,Space.Self);
-			if (-trans.localPosition.y > gameController.height - gameController.sphereSize/2)
-				gameController.sg.ResetSphere(gameObject);
+			if (-trans.localPosition.y > gc.height - gc.sphereSize/2)
+				gc.sg.ResetSphere(gameObject);
 			trans.Rotate(Vector3.up * Time.deltaTime * angleSpeed);
 		}
 	}

@@ -4,9 +4,9 @@ namespace SpheresHunt{
 
 	public class GameController : MonoBehaviour {
 		
-		public readonly int width = 40;
+		readonly int width = 40;
 		public int height;
-		public readonly int sphereSize = 3;
+		public int sphereSize = 3;
 		int spBufferSize = 16;
 		MyScene sc;
 		MyUI ui;
@@ -20,17 +20,17 @@ namespace SpheresHunt{
 		public int score;
 		public int level = 0;
 		int levelDuration = 30;
-		public Texture[][] texstures;
+		public Texture[][] textures;
 		public bool isTexGradientHorizontal;
-		public float timeSc = 1;
+		public float timeScale = 1;
 
 		void Awake () {
 
 			sc = new MyScene (width);
 			
-			texstures = new Texture[2][];
-			texstures [0] = new Texture[16];
-			texstures [1] = new Texture[16];
+			textures = new Texture[2][];
+			textures [0] = new Texture[16];
+			textures [1] = new Texture[16];
 
 			sg = new SpheresGenerator(new Vector3 (-15,sc.height,0),new Vector3 (spehereGenSize, sc.height,spehereGenSize ), sphereSize, spBufferSize);
 
@@ -58,7 +58,7 @@ namespace SpheresHunt{
 			
 			Fire ();
 			UpdateTime ();
-			Time.timeScale = timeSc;
+			Time.timeScale = timeScale;
 		}
 		
 		void Fire (){
@@ -99,17 +99,22 @@ namespace SpheresHunt{
 			while (true) {
 
 				isTexGradientHorizontal = (level%2 == 0)?true:false;
-				for (int i = 0; i < texstures[(level+1)%2].Length; i++)texstures [(level+1)%2] [i] = null;
+				for (int i = 0; i < textures[(level+1)%2].Length; i++)textures [(level+1)%2] [i] = null;
 
-				for (int i = 0; i < texstures[(level+1)%2].Length; i++) {
+				for (int i = 0; i < textures[(level+1)%2].Length; i++) {
 					int power = (int)Mathf.Pow(2,i/4 + 5);
-					texstures [(level+1)%2] [i] = sg.GenTexture (power,!isTexGradientHorizontal);
+					textures [(level+1)%2] [i] = sg.GenTexture (power,!isTexGradientHorizontal);
 					yield return new WaitForSeconds((float)levelDuration/16.0f);
 				}
 
 				level++;
 				baseSpeed = level+3;
 			}
+		}
+
+		public void ApplyLoadedTextures(Texture[] tex){
+
+			sc.ApplyAssetBundleTexture (tex);
 		}
 	}
 }

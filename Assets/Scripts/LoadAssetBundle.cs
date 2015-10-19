@@ -9,8 +9,11 @@ namespace SpheresHunt{
 		private WWW www;
 		private Type type;
 		Texture[] tex;
+		GameController gc;
 		
 		void Start () {
+
+			gc = GameObject.Find ("Management").GetComponent<GameController> ();
 			Caching.CleanCache();
 			string loadUrl = "file://Textures.unity3d";
 			StartCoroutine(load(loadUrl, 1));
@@ -33,20 +36,8 @@ namespace SpheresHunt{
 				yield return request;
 				tex[i] = request.asset as Texture;
 			}
-			
-			Material mat = GameObject.Find ("LeftWall").GetComponent<Renderer> ().material;
-			mat.mainTexture = tex[0];
-			mat.mainTextureScale = new Vector2 (2,2);
-			
-			mat = GameObject.Find ("RightWall").GetComponent<Renderer> ().material;
-			mat.mainTexture = tex[0];
-			mat.mainTextureScale = new Vector2 (2,2);
-			
-			mat = GameObject.Find ("BackWall").GetComponent<Renderer> ().material;
-			mat.mainTexture = tex[0];
-			mat.mainTextureScale = new Vector2 (2,2);
-			
-			GameObject.Find("Floor").GetComponent<Renderer> ().material.mainTexture = tex[1];
+
+			gc.ApplyLoadedTextures (tex);
 
 			www.Dispose();
 			assetBundle.Unload(false);

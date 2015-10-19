@@ -51,7 +51,24 @@ namespace SpheresHunt{
 			wall.isStatic = true;
 			
 			return wall;
-		}	
+		}
+
+		public void ApplyAssetBundleTexture(Texture[]tex){
+
+			Material mat = LeftWall.GetComponent<Renderer> ().material;
+			mat.mainTexture = tex[0];
+			mat.mainTextureScale = new Vector2 (2,2);
+			
+			mat = RightWall.GetComponent<Renderer> ().material;
+			mat.mainTexture = tex[0];
+			mat.mainTextureScale = new Vector2 (2,2);
+			
+			mat = BackWall.GetComponent<Renderer> ().material;
+			mat.mainTexture = tex[0];
+			mat.mainTextureScale = new Vector2 (2,2);
+			
+			Floor.GetComponent<Renderer> ().material.mainTexture = tex[1];
+		}
 	}
 }
 
