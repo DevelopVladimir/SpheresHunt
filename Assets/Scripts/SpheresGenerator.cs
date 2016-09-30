@@ -7,27 +7,26 @@ namespace SpheresHunt
     public class SpheresGenerator
     {
 
-        public GameObject SpheresHolder { get; private set; }
+        //public GameObject SpheresHolder { get; private set; }
+        public GameObject SpheresHolder;
         Transform spheresHolderTrans;
         public GameObject[] spBuffer;
-        public readonly Vector3 spheresStartPos;
+        //public readonly Vector3 spheresStartPos;
         public readonly Vector3 spheresGenSizes;
         float sphereSize;
-        //GameController gc = GameObject.Find("Management").GetComponent<GameController>();
         GameController gc = GameController.Instance;
 
         public SpheresGenerator(Vector3 _spheresStartPos, Vector3 _spheresGenSizes, float _sphereSize, int _spBufferSize)
         {
-
             spheresGenSizes = _spheresGenSizes;
-            spheresStartPos = _spheresStartPos;
+            //spheresStartPos = _spheresStartPos;
             sphereSize = _sphereSize;
             spBuffer = new GameObject[_spBufferSize];
 
             SpheresHolder = new GameObject();
-            SpheresHolder.name = "Spheres";
+            SpheresHolder.name = "SpheresHolder";
             spheresHolderTrans = SpheresHolder.GetComponent<Transform>();
-            spheresHolderTrans.position = spheresStartPos;
+            spheresHolderTrans.position = _spheresStartPos;
 
             gc.isTexGradientHorizontal = (gc.level % 2 == 0) ? true : false;
             for (int i = 0; i < gc.textures[0].Length; i++)

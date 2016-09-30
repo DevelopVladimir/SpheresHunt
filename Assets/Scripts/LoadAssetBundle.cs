@@ -15,8 +15,6 @@ namespace SpheresHunt
 
         void Start()
         {
-
-            //gc = GameObject.Find("Management").GetComponent<GameController>();
             gc = GameController.Instance;
             Caching.CleanCache();
             string loadUrl = "file://Textures.unity3d";
@@ -43,7 +41,7 @@ namespace SpheresHunt
                 tex[i] = request.asset as Texture;
             }
 
-            gc.ApplyLoadedTextures(tex);
+            //gc.ApplyLoadedTextures(tex);
 
             www.Dispose();
             assetBundle.Unload(false);

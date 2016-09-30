@@ -23,7 +23,7 @@ namespace SpheresHunt
         void Update()
         {
             trans.Translate(Vector3.down * speed * Time.deltaTime, Space.Self);
-            if (-trans.localPosition.y > gc.sceneWidth * gc.sceneProportions.y - gc.sphereSize / 2)
+            if (-trans.localPosition.y > gc.sceneSizes.y - gc.sphereSize / 2)
                 gc.sg.ResetSphere(gameObject);
             trans.Rotate(Vector3.up * Time.deltaTime * angleSpeed);
         }

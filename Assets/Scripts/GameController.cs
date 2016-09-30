@@ -14,9 +14,8 @@ namespace SpheresHunt
                 return instance;
             }
         }
-        public float sceneWidth = 50;
-        //[ReadOnly]
-        public Vector3 sceneProportions = new Vector3(1.0f, 1.2f, 0.8f); //Depend of sceneWidth
+        public readonly Vector3 sceneSizes = new Vector3(50 * (4.0f / 5.0f) * (float)Screen.width / Screen.height, 60, 30);
+        private Vector3 camPosition = new Vector3(0, 20, -34);
         public float sphereSize = 3;
         public int spBufferSize = 16;
         public float sphereSpawnGenSize = 30;
@@ -58,22 +57,20 @@ namespace SpheresHunt
                 }
                 return;
             }
-
-            sc = new MyScene(sceneWidth * sceneProportions);
+           
+            sc = new MyScene(sceneSizes);
             StartCoroutine(load(loadUrl, 1));
 
             textures = new Texture[2][];
             textures[0] = new Texture[16];
             textures[1] = new Texture[16];
 
-            sg = new SpheresGenerator(new Vector3(-15, sceneWidth * sceneProportions.y, 0), new Vector3(sphereSpawnGenSize, sceneWidth * sceneProportions.y, sphereSpawnGenSize), sphereSize, spBufferSize);
+            sg = new SpheresGenerator(new Vector3(-15, sceneSizes.y, 0), new Vector3(sphereSpawnGenSize, sceneSizes.y, sphereSpawnGenSize), sphereSize, spBufferSize);
 
             ui = new MyUI();
 
             baseSpeed = 3;
-            //height = sc.height;
-
-            Vector3 camPosition = new Vector3(0, sceneWidth * 2 / 5, -sceneWidth * 19.5f / 40);
+           
             cam = Camera.main;
             cam.transform.position = camPosition;
 
@@ -84,14 +81,12 @@ namespace SpheresHunt
 
         void Start()
         {
-
             StartCoroutine("PushSpheres");
             StartCoroutine("ChangeLevel");
         }
 
         void Update()
         {
-
             Fire();
             UpdateTime();
             Time.timeScale = timeScale;
@@ -99,7 +94,6 @@ namespace SpheresHunt
 
         void Fire()
         {
-
             RaycastHit hit;
             GameObject sphere;
             if (Input.GetKeyDown(KeyCode.Mouse0))
@@ -157,12 +151,6 @@ namespace SpheresHunt
                 level++;
                 baseSpeed = level + 3;
             }
-        }
-
-        public void ApplyLoadedTextures(Texture[] tex)
-        {
-
-            //sc.ApplyAssetBundleTexture(tex);
         }
 
         private IEnumerator load(string url, int version)
