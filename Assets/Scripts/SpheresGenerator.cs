@@ -1,87 +1,101 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+
 
 namespace SpheresHunt
 {
 
     public class SpheresGenerator
     {
-
-        //public GameObject SpheresHolder { get; private set; }
-        public GameObject SpheresHolder;
+        public GameObject SpheresHolder;   
         Transform spheresHolderTrans;
-        public GameObject[] spBuffer;
-        //public readonly Vector3 spheresStartPos;
-        public readonly Vector3 spheresGenSizes;
+        public GameObject SpheresPool;
+        Transform spheresPoolTrans;
+        public readonly Vector3 sphereSpawnGenSize;
         float sphereSize;
         GameController gc = GameController.Instance;
+        Stack<SphereController> spPool;
+        
 
-        public SpheresGenerator(Vector3 _spheresStartPos, Vector3 _spheresGenSizes, float _sphereSize, int _spBufferSize)
+        public SpheresGenerator(Vector3 _sceneSizes, float _sphereSize, int _spBufferSize)
         {
-            spheresGenSizes = _spheresGenSizes;
-            //spheresStartPos = _spheresStartPos;
             sphereSize = _sphereSize;
-            spBuffer = new GameObject[_spBufferSize];
-
             SpheresHolder = new GameObject();
             SpheresHolder.name = "SpheresHolder";
             spheresHolderTrans = SpheresHolder.GetComponent<Transform>();
-            spheresHolderTrans.position = _spheresStartPos;
+            spheresHolderTrans.position = new Vector3(-_sceneSizes.x / 2 + _sphereSize, _sceneSizes.y, _sphereSize);
+            sphereSpawnGenSize = new Vector3(_sceneSizes.x - 2 * _sphereSize, _sceneSizes.y, _sceneSizes.z - 2 * _sphereSize);
 
-            gc.isTexGradientHorizontal = (gc.level % 2 == 0) ? true : false;
+            SpheresPool = new GameObject();
+            SpheresPool.name = "SpheresPool";
+            spheresPoolTrans = SpheresPool.GetComponent<Transform>();
+
+            gc.isTexGradientHorizontal = ((gc.level + 1) % 2 == 0) ? true : false;
             for (int i = 0; i < gc.textures[0].Length; i++)
             {
                 int power = (int)Mathf.Pow(2, i / 4 + 5);
                 gc.textures[0][i] = GenTexture(power, gc.isTexGradientHorizontal);
             }
 
-            for (int i = 0; i < spBuffer.Length; i++)
-                spBuffer[i] = GenNewSphere(i);
+            spPool = new Stack<SphereController>(gc.spBufferSize);
+
+            for (int i = 0; i < gc.spBufferSize; i++)
+                PushSphereToPool(GenNewSphere(i));
         }
 
-        private GameObject GenNewSphere(int i)
-        {
-
+        private SphereController GenNewSphere(int i)
+        {           
             GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             sphere.name = "Farik" + i;
             Transform trans = sphere.transform;
-            trans.SetParent(spheresHolderTrans, false);
+            trans.SetParent(spheresPoolTrans, false);
             trans.localScale = new Vector3(sphereSize, sphereSize, sphereSize);
-            sphere.AddComponent<SphereController>();
-            ResetSphere(sphere);
-            return sphere;
+            SphereController spCtrl = sphere.AddComponent<SphereController>();
+            spCtrl.DeactivateSphere();
+            return spCtrl;
         }
 
-        public void ResetSphere(GameObject sphere)
+        public void PushSphereToPool(SphereController spCtrl)
         {
-
-            Renderer rend;
-            MeshRenderer meshRen = sphere.GetComponent<MeshRenderer>();
-            meshRen.enabled = false;
-            rend = sphere.GetComponent<Renderer>();
-            Transform trans = sphere.transform;
-            Vector3 startPos = new Vector3(Random.Range(0.0f, spheresGenSizes.x), 0, Random.Range(0.0f, spheresGenSizes.z));
-            trans.localPosition = startPos;
-            SphereController sCtrl = sphere.GetComponent<SphereController>();
-            sCtrl.enabled = false;
-            float normalDepth = trans.localPosition.z / spheresGenSizes.z;
-
-            if (normalDepth > 0.75) rend.material.mainTexture = gc.textures[gc.level % 2][Random.Range(0, 3)];
-            else if (normalDepth > 0.5) rend.material.mainTexture = gc.textures[gc.level % 2][Random.Range(4, 7)];
-            else if (normalDepth > 0.25) rend.material.mainTexture = gc.textures[gc.level % 2][Random.Range(8, 11)];
-            else rend.material.mainTexture = gc.textures[gc.level % 2][Random.Range(12, 15)];
+            spCtrl.DeactivateSphere();
+            spCtrl.transform.SetParent(spheresPoolTrans, false);
+            spPool.Push(spCtrl);
         }
 
-        public void Push(int i)
+        public void GetNextSphere()
         {
+            SphereController spCtrl;
+            if (spPool.Count > 0)
+                spCtrl = spPool.Pop();
+            else
+            {
+                spCtrl = GenNewSphere(gc.spBufferSize);
+                gc.spBufferSize++;
+            }
 
-            spBuffer[i].GetComponent<MeshRenderer>().enabled = true;
-            spBuffer[i].GetComponent<SphereController>().enabled = true;
+            Transform spTrans = spCtrl.transform;
+            spTrans.SetParent(spheresHolderTrans, false);
+            spTrans.localPosition = new Vector3(Random.Range(0.0f, sphereSpawnGenSize.x), 0, Random.Range(0.0f, sphereSpawnGenSize.z));
+
+            float normalizedDepth = spTrans.localPosition.z / sphereSpawnGenSize.z;
+            spCtrl.speed = gc.baseSpeed + 6 * normalizedDepth;
+
+            int textureNum;
+            if (normalizedDepth > 0.75) textureNum = Random.Range(0, 4);
+            else if (normalizedDepth > 0.5) textureNum = Random.Range(4, 8);
+            else if (normalizedDepth > 0.25) textureNum = Random.Range(8, 12);
+            else textureNum = Random.Range(12, 16);
+
+            spCtrl.GetComponent<MeshRenderer>().material.mainTexture = gc.textures[(gc.level + 1) % 2][textureNum];
+
+            spCtrl.GetComponent<Renderer>().enabled = true;
+            spCtrl.enabled = true;
+            spCtrl.GetComponent<Collider>().enabled = true;
         }
 
         public Texture2D GenTexture(int size, bool horizont)
         {
-
             Texture2D myTex;
             myTex = new Texture2D(size, size);
             Vector3 v = Random.onUnitSphere;

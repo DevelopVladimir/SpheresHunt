@@ -11,11 +11,11 @@ namespace SpheresHunt
         private WWW www;
         private Type type;
         Texture[] tex;
-        GameController gc;
+        //GameController gc;
 
         void Start()
         {
-            gc = GameController.Instance;
+            //gc = GameController.Instance;
             Caching.CleanCache();
             string loadUrl = "file://Textures.unity3d";
             StartCoroutine(load(loadUrl, 1));

@@ -18,27 +18,26 @@ namespace SpheresHunt
         private Vector3 camPosition = new Vector3(0, 20, -34);
         public float sphereSize = 3;
         public int spBufferSize = 16;
-        public float sphereSpawnGenSize = 30;
-        public float baseSpeed;
-        public int levelDuration = 30;
+        public float baseSpeed = 5;
+        public float levelDuration = 30;
         public float timeScale = 1;
         public bool isTexGradientHorizontal;
 
         MyScene sc;
         MyUI ui;
         public SpheresGenerator sg;
-        float period = 0.5f;
-        
-        
+        public float sphereGenRate = 1.0f;
+
+
         Camera cam;
         float timer;
         int tempTimer;
         public int score;
-        public int level = 0;
-        
+        public int level = 1;
+
         public Texture[][] textures;
-                
-        
+
+
         private string loadUrl = "file://Textures.unity3d";
 
         void Awake()
@@ -57,7 +56,7 @@ namespace SpheresHunt
                 }
                 return;
             }
-           
+
             sc = new MyScene(sceneSizes);
             StartCoroutine(load(loadUrl, 1));
 
@@ -65,12 +64,9 @@ namespace SpheresHunt
             textures[0] = new Texture[16];
             textures[1] = new Texture[16];
 
-            sg = new SpheresGenerator(new Vector3(-15, sceneSizes.y, 0), new Vector3(sphereSpawnGenSize, sceneSizes.y, sphereSpawnGenSize), sphereSize, spBufferSize);
+            sg = new SpheresGenerator(sceneSizes, sphereSize, spBufferSize);
 
             ui = new MyUI();
-
-            baseSpeed = 3;
-           
             cam = Camera.main;
             cam.transform.position = camPosition;
 
@@ -104,7 +100,7 @@ namespace SpheresHunt
                     sphere = hit.collider.gameObject;
                     score += Mathf.RoundToInt(sphere.transform.localPosition.z);
                     ui.scoreT.text = "Score: " + score;
-                    sg.ResetSphere(sphere);
+                    sg.PushSphereToPool(sphere.GetComponent<SphereController>());
                 }
             }
         }
@@ -121,14 +117,10 @@ namespace SpheresHunt
 
         IEnumerator PushSpheres()
         {
-
             while (true)
             {
-                for (int i = 0; i < spBufferSize; i++)
-                {
-                    sg.Push(i);
-                    yield return new WaitForSeconds(period);
-                }
+                sg.GetNextSphere();
+                yield return new WaitForSeconds(sphereGenRate);
             }
         }
 
@@ -137,19 +129,18 @@ namespace SpheresHunt
 
             while (true)
             {
+                
+                baseSpeed = level * 2 + 3;
+                isTexGradientHorizontal = ((level + 1) % 2 == 0) ? true : false;
+                for (int i = 0; i < textures[level % 2].Length; i++) textures[level % 2][i] = null;
 
-                isTexGradientHorizontal = (level % 2 == 0) ? true : false;
-                for (int i = 0; i < textures[(level + 1) % 2].Length; i++) textures[(level + 1) % 2][i] = null;
-
-                for (int i = 0; i < textures[(level + 1) % 2].Length; i++)
+                for (int i = 0; i < textures[level % 2].Length; i++)
                 {
                     int power = (int)Mathf.Pow(2, i / 4 + 5);
-                    textures[(level + 1) % 2][i] = sg.GenTexture(power, !isTexGradientHorizontal);
-                    yield return new WaitForSeconds((float)levelDuration / 16.0f);
+                    textures[level % 2][i] = sg.GenTexture(power, !isTexGradientHorizontal);
+                    yield return new WaitForSeconds(levelDuration / textures[level % 2].Length);
                 }
-
                 level++;
-                baseSpeed = level + 3;
             }
         }
 
