@@ -5,7 +5,6 @@ using System.Collections.Generic;
 
 namespace SpheresHunt
 {
-
     public class SpheresGenerator
     {
         public GameObject SpheresHolder;   
@@ -16,11 +15,13 @@ namespace SpheresHunt
         float sphereSize;
         GameController gc = GameController.Instance;
         Stack<SphereController> spPool;
-        
+        public Texture[,] textures;
+        int texBufferSize;
 
-        public SpheresGenerator(Vector3 _sceneSizes, float _sphereSize, int _spBufferSize)
+        public SpheresGenerator(Vector3 _sceneSizes, float _sphereSize, int _spBufferSize, int _texBufferSize)
         {
             sphereSize = _sphereSize;
+            texBufferSize = _texBufferSize;
             SpheresHolder = new GameObject();
             SpheresHolder.name = "SpheresHolder";
             spheresHolderTrans = SpheresHolder.GetComponent<Transform>();
@@ -31,54 +32,44 @@ namespace SpheresHunt
             SpheresPool.name = "SpheresPool";
             spheresPoolTrans = SpheresPool.GetComponent<Transform>();
 
-            gc.isTexGradientHorizontal = ((gc.level + 1) % 2 == 0) ? true : false;
-            for (int i = 0; i < gc.textures[0].Length; i++)
-            {
-                int power = (int)Mathf.Pow(2, i / 4 + 5);
-                gc.textures[0][i] = GenTexture(power, gc.isTexGradientHorizontal);
-            }
+            textures = new Texture[2, texBufferSize];
+            for (int i = 0; i < texBufferSize; i++)
+                GenSphereTexForNextLevel(i);
 
             spPool = new Stack<SphereController>(gc.spBufferSize);
-
             for (int i = 0; i < gc.spBufferSize; i++)
-                PushSphereToPool(GenNewSphere(i));
+                GenNewSphereToPool(i);
         }
 
-        private SphereController GenNewSphere(int i)
+        private void GenNewSphereToPool(int i)
         {           
             GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            sphere.name = "Farik" + i;
-            Transform trans = sphere.transform;
-            trans.SetParent(spheresPoolTrans, false);
-            trans.localScale = new Vector3(sphereSize, sphereSize, sphereSize);
             SphereController spCtrl = sphere.AddComponent<SphereController>();
-            spCtrl.DeactivateSphere();
-            return spCtrl;
+            sphere.name = "Farik" + i;
+            spCtrl.trans.localScale = new Vector3(sphereSize, sphereSize, sphereSize);          
+            PushSphereToPool(spCtrl);
         }
 
         public void PushSphereToPool(SphereController spCtrl)
         {
-            spCtrl.DeactivateSphere();
-            spCtrl.transform.SetParent(spheresPoolTrans, false);
+            spCtrl.col.enabled = false;
+            spCtrl.rend.enabled = false;
+            spCtrl.enabled = false;
+            spCtrl.trans.localPosition = Vector3.zero;
+            spCtrl.trans.SetParent(spheresPoolTrans, false);
             spPool.Push(spCtrl);
         }
 
         public void GetNextSphere()
-        {
-            SphereController spCtrl;
-            if (spPool.Count > 0)
-                spCtrl = spPool.Pop();
-            else
-            {
-                spCtrl = GenNewSphere(gc.spBufferSize);
-                gc.spBufferSize++;
-            }
+        {        
+            if (0 == spPool.Count)
+                GenNewSphereToPool(gc.spBufferSize++);
+               
+            SphereController spCtrl = spPool.Pop();
+            spCtrl.trans.SetParent(spheresHolderTrans, false);
+            spCtrl.trans.localPosition = new Vector3(Random.Range(0.0f, sphereSpawnGenSize.x), 0, Random.Range(0.0f, sphereSpawnGenSize.z));
 
-            Transform spTrans = spCtrl.transform;
-            spTrans.SetParent(spheresHolderTrans, false);
-            spTrans.localPosition = new Vector3(Random.Range(0.0f, sphereSpawnGenSize.x), 0, Random.Range(0.0f, sphereSpawnGenSize.z));
-
-            float normalizedDepth = spTrans.localPosition.z / sphereSpawnGenSize.z;
+            float normalizedDepth = spCtrl.trans.localPosition.z / sphereSpawnGenSize.z;
             spCtrl.speed = gc.baseSpeed + 6 * normalizedDepth;
 
             int textureNum;
@@ -87,28 +78,32 @@ namespace SpheresHunt
             else if (normalizedDepth > 0.25) textureNum = Random.Range(8, 12);
             else textureNum = Random.Range(12, 16);
 
-            spCtrl.GetComponent<MeshRenderer>().material.mainTexture = gc.textures[(gc.level + 1) % 2][textureNum];
+            spCtrl.rend.material.mainTexture = textures[gc.level % 2, textureNum];
 
-            spCtrl.GetComponent<Renderer>().enabled = true;
+            spCtrl.rend.enabled = true;
             spCtrl.enabled = true;
-            spCtrl.GetComponent<Collider>().enabled = true;
+            spCtrl.col.enabled = true;
         }
 
-        public Texture2D GenTexture(int size, bool horizont)
+        public void GenSphereTexForNextLevel(int texNum)
         {
-            Texture2D myTex;
-            myTex = new Texture2D(size, size);
+            int nextLevelTexSubmassive = (gc.level + 1) % 2;
+            bool isTexGradientHorizontal = (1 == nextLevelTexSubmassive) ? true : false;
+            int texSize = (int)Mathf.Pow(2, texNum / 4 + 5);
+
+            Texture2D myTex = new Texture2D(texSize, texSize);
             Vector3 v = Random.onUnitSphere;
             Color col = new Color(v.x, v.y, v.z);
+            //Color col = new Color(Random.value, Random.value, Random.value);
 
-            for (int i = 0; i < size; i++)
-                for (int j = 0; j < size; j++)
+            for (int i = 0; i < texSize; i++)
+                for (int j = 0; j < texSize; j++)
                 {
-                    myTex.SetPixel(i, j, Color.Lerp(col, (horizont) ? Color.white : Color.red, ((horizont) ? (float)i / size : (float)j / size)));
+                    myTex.SetPixel(i, j, Color.Lerp(col, (isTexGradientHorizontal) ? Color.white : Color.red, ((isTexGradientHorizontal) ? (float)i / texSize : (float)j / texSize)));
                 }
 
             myTex.Apply();
-            return myTex;
+            textures[nextLevelTexSubmassive, texNum] = myTex;
         }
     }
 }

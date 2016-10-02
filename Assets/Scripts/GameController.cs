@@ -21,22 +21,18 @@ namespace SpheresHunt
         public float baseSpeed = 5;
         public float levelDuration = 30;
         public float timeScale = 1;
-        public bool isTexGradientHorizontal;
+        private int texBufferSize = 16;
 
         MyScene sc;
         MyUI ui;
         public SpheresGenerator sg;
         public float sphereGenRate = 1.0f;
 
-
         Camera cam;
         float timer;
         int tempTimer;
         public int score;
-        public int level = 1;
-
-        public Texture[][] textures;
-
+        public int level = 0;
 
         private string loadUrl = "file://Textures.unity3d";
 
@@ -60,11 +56,7 @@ namespace SpheresHunt
             sc = new MyScene(sceneSizes);
             StartCoroutine(load(loadUrl, 1));
 
-            textures = new Texture[2][];
-            textures[0] = new Texture[16];
-            textures[1] = new Texture[16];
-
-            sg = new SpheresGenerator(sceneSizes, sphereSize, spBufferSize);
+            sg = new SpheresGenerator(sceneSizes, sphereSize, spBufferSize, texBufferSize);
 
             ui = new MyUI();
             cam = Camera.main;
@@ -77,8 +69,9 @@ namespace SpheresHunt
 
         void Start()
         {
-            StartCoroutine("PushSpheres");
             StartCoroutine("ChangeLevel");
+            StartCoroutine("PushSpheres");
+            
         }
 
         void Update()
@@ -126,21 +119,16 @@ namespace SpheresHunt
 
         IEnumerator ChangeLevel()
         {
-
             while (true)
             {
-                
-                baseSpeed = level * 2 + 3;
-                isTexGradientHorizontal = ((level + 1) % 2 == 0) ? true : false;
-                for (int i = 0; i < textures[level % 2].Length; i++) textures[level % 2][i] = null;
-
-                for (int i = 0; i < textures[level % 2].Length; i++)
-                {
-                    int power = (int)Mathf.Pow(2, i / 4 + 5);
-                    textures[level % 2][i] = sg.GenTexture(power, !isTexGradientHorizontal);
-                    yield return new WaitForSeconds(levelDuration / textures[level % 2].Length);
-                }
                 level++;
+                baseSpeed = level * 2 + 3;
+
+                for (int i = 0; i < texBufferSize; i++)
+                {
+                    sg.GenSphereTexForNextLevel(i);
+                    yield return new WaitForSeconds(levelDuration / texBufferSize);
+                }
             }
         }
 
