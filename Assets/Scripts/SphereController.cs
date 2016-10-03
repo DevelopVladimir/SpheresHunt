@@ -3,16 +3,14 @@ using System.Collections;
 
 namespace SpheresHunt
 {
-
     public class SphereController : MonoBehaviour
     {
-
+        private GameController gc;
         public Transform trans;
         public Renderer rend;
         public Collider col;
         public float speed;
-        GameController gc;
-        float angleSpeed = 90;
+        public float angleSpeed;
 
         void Awake()
         {

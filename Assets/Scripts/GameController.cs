@@ -5,73 +5,70 @@ namespace SpheresHunt
 {
     public class GameController : MonoBehaviour
     {
-        private static GameController instance;
+        #region Singleton
+        private static GameController _instance;
         public static GameController Instance
         {
             get
             {
-                if (null == instance) Debug.Log("There are no GameController instance in the scene" + Application.loadedLevelName);
-                return instance;
+                if (null == _instance) Debug.Log("There are no GameController instance in the scene" + Application.loadedLevelName);
+                return _instance;
             }
         }
-        public readonly Vector3 sceneSizes = new Vector3(50 * (4.0f / 5.0f) * (float)Screen.width / Screen.height, 60, 30);
+        #endregion
+
+        public Vector3 sceneSizes = new Vector3(50 * (4.0f / 5.0f) * (float)Screen.width / Screen.height, 60, 30);
         private Vector3 camPosition = new Vector3(0, 20, -34);
         public float sphereSize = 3;
         public int spBufferSize = 16;
         public float baseSpeed = 5;
-        public float levelDuration = 30;
-        public float timeScale = 1;
+        private float levelDuration = 30;
+        private float timeScale = 1;
         private int texBufferSize = 16;
-
-        MyScene sc;
-        MyUI ui;
-        public SpheresGenerator sg;
         public float sphereGenRate = 1.0f;
+        private string loadUrl = "file://Textures.unity3d";
 
-        Camera cam;
-        float timer;
-        int tempTimer;
-        public int score;
+        private MyScene sc;
+        private MyUI ui;
+        public SpheresGenerator sg;
+        private Camera cam;
+        private float timer = 0;
+        private int tempTimer = 0;
+        public int score = 0;
         public int level = 0;
 
-        private string loadUrl = "file://Textures.unity3d";
+
 
         void Awake()
         {
-            if (instance == null)
+            #region Singleton
+            if (_instance == null)
             {
-                instance = this;
+                _instance = this;
                 DontDestroyOnLoad(gameObject);
             }
             else
             {
-                if (instance != this)
+                if (_instance != this)
                 {
                     Debug.Log("Duplicate of '" + this.GetType() + "' script was removed from '" + gameObject.name + "' gameobject");
                     Destroy(this);
                 }
                 return;
             }
-
+            #endregion
             sc = new MyScene(sceneSizes);
             StartCoroutine(load(loadUrl, 1));
-
-            sg = new SpheresGenerator(sceneSizes, sphereSize, spBufferSize, texBufferSize);
-
+            sg = new SpheresGenerator(sceneSizes, sphereSize, texBufferSize);
             ui = new MyUI();
             cam = Camera.main;
             cam.transform.position = camPosition;
-
-            timer = 0;
-            score = 0;
-            tempTimer = 0;
         }
 
         void Start()
         {
             StartCoroutine("ChangeLevel");
             StartCoroutine("PushSpheres");
-            
         }
 
         void Update()
@@ -83,17 +80,16 @@ namespace SpheresHunt
 
         void Fire()
         {
-            RaycastHit hit;
-            GameObject sphere;
             if (Input.GetKeyDown(KeyCode.Mouse0))
             {
+                RaycastHit hit;
                 Ray ray = cam.ScreenPointToRay(Input.mousePosition);
                 if (Physics.Raycast(ray, out hit))
                 {
-                    sphere = hit.collider.gameObject;
-                    score += Mathf.RoundToInt(sphere.transform.localPosition.z);
+                    SphereController spCtrl = hit.collider.GetComponent<SphereController>();
+                    score += Mathf.RoundToInt(spCtrl.trans.localPosition.z);
                     ui.scoreT.text = "Score: " + score;
-                    sg.PushSphereToPool(sphere.GetComponent<SphereController>());
+                    sg.PushSphereToPool(spCtrl);
                 }
             }
         }

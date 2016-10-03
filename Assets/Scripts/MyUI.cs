@@ -8,27 +8,24 @@ using UnityEngine.Events;
 
 namespace SpheresHunt
 {
-
     public class MyUI
     {
-
-        GameObject ui;
-        GameObject secText;
-        GameObject minText;
-        GameObject hoursText;
-        GameObject scoreText;
+        private GameObject ui;
+        private GameObject secText;
+        private GameObject minText;
+        private GameObject hoursText;
+        private GameObject scoreText;
         private const int LayerUI = 5;
-        int sec;
-        int min;
-        int hour;
-        Text secT;
-        Text minT;
-        Text hourT;
+        private int sec;
+        private int min;
+        private int hour;
+        private Text secT;
+        private Text minT;
+        private Text hourT;
         public Text scoreT;
 
         public MyUI()
         {
-
             ui = new GameObject();
             ui.name = "UI";
             Transform uiTrans = ui.transform;
@@ -50,7 +47,6 @@ namespace SpheresHunt
 
         public void AddSeconds()
         {
-
             sec++;
             secT.text = (sec < 10) ? "0" + sec : "" + sec;
             if (sec == 60)
@@ -71,7 +67,6 @@ namespace SpheresHunt
 
         private GameObject CreateCanvas(Transform parent)
         {
-
             GameObject canvasObject = new GameObject("Canvas");
             canvasObject.layer = LayerUI;
             canvasObject.AddComponent<RectTransform>();
@@ -90,7 +85,6 @@ namespace SpheresHunt
 
         private GameObject CreateEventSystem(Transform parent)
         {
-
             GameObject esObject = new GameObject();
             esObject.name = "EventSystem";
             EventSystem esClass = esObject.AddComponent<EventSystem>();
@@ -103,7 +97,6 @@ namespace SpheresHunt
 
         private GameObject CreateText(Transform parent, float x, float y, float w, float h, string message, int fontSize)
         {
-
             GameObject textObject = new GameObject();
             textObject.transform.SetParent(parent);
             textObject.layer = LayerUI;
@@ -129,7 +122,6 @@ namespace SpheresHunt
 
         GameObject CreateUITextObj(string name, Transform parentObjTrans)
         {
-
             GameObject textObj;
             Transform trans;
             textObj = new GameObject();

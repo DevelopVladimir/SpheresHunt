@@ -7,23 +7,18 @@ namespace SpheresHunt
 
     public class MyScene
     {
-
         public GameObject Walls { get; private set; }
         public GameObject LeftWall { get; private set; }
         public GameObject RightWall { get; private set; }
         public GameObject BackWall { get; private set; }
         public GameObject Floor { get; private set; }
 
-        public readonly float width;
-        public readonly float depth;
-        public readonly float height;
+        private float width;
+        private float depth;
+        private float height;
 
         public MyScene(Vector3 sceneSizes)
         {
-
-            //width = _width;
-            //depth = width * 4 / 5;
-            //height = width * 6 / 5;
             width = sceneSizes.x;
             height = sceneSizes.y;
             depth = sceneSizes.z;
@@ -41,7 +36,6 @@ namespace SpheresHunt
 
         GameObject CreateWall(string name, Transform parentObjTrans, Vector3 localPos, Vector3 localRot, float wHeight, float wWidth)
         {
-
             Transform trans;
             float thickness = 0.1f;
             GameObject wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -62,7 +56,6 @@ namespace SpheresHunt
 
         public void ApplyAssetBundleTexture(Texture[] tex)
         {
-
             Material mat = LeftWall.GetComponent<Renderer>().material;
             mat.mainTexture = tex[0];
             mat.mainTextureScale = new Vector2(2, 2);

@@ -7,30 +7,28 @@ namespace SpheresHunt
 {
     public class SpheresGenerator
     {
-        public GameObject SpheresHolder;   
-        Transform spheresHolderTrans;
-        public GameObject SpheresPool;
-        Transform spheresPoolTrans;
-        public readonly Vector3 sphereSpawnGenSize;
-        float sphereSize;
-        GameController gc = GameController.Instance;
-        Stack<SphereController> spPool;
-        public Texture[,] textures;
-        int texBufferSize;
+        private GameController gc;
+        private Transform spheresHolderTrans;
+        private Transform spheresPoolTrans;
+        private Vector3 sphereSpawnGenSize;
+        private Stack<SphereController> spPool;
+        private Texture[,] textures;
+        private int texBufferSize;
+        private float sphereSize;
 
-        public SpheresGenerator(Vector3 _sceneSizes, float _sphereSize, int _spBufferSize, int _texBufferSize)
+        public SpheresGenerator(Vector3 _sceneSizes, float _sphereSize, int _texBufferSize)
         {
+            gc = GameController.Instance;
             sphereSize = _sphereSize;
             texBufferSize = _texBufferSize;
-            SpheresHolder = new GameObject();
-            SpheresHolder.name = "SpheresHolder";
-            spheresHolderTrans = SpheresHolder.GetComponent<Transform>();
+
+            spheresHolderTrans = new GameObject().GetComponent<Transform>();
+            spheresHolderTrans.name = "SpheresHolder";
             spheresHolderTrans.position = new Vector3(-_sceneSizes.x / 2 + _sphereSize, _sceneSizes.y, _sphereSize);
             sphereSpawnGenSize = new Vector3(_sceneSizes.x - 2 * _sphereSize, _sceneSizes.y, _sceneSizes.z - 2 * _sphereSize);
 
-            SpheresPool = new GameObject();
-            SpheresPool.name = "SpheresPool";
-            spheresPoolTrans = SpheresPool.GetComponent<Transform>();
+            spheresPoolTrans = new GameObject().GetComponent<Transform>();
+            spheresPoolTrans.name = "SpheresPool";
 
             textures = new Texture[2, texBufferSize];
             for (int i = 0; i < texBufferSize; i++)
@@ -42,11 +40,11 @@ namespace SpheresHunt
         }
 
         private void GenNewSphereToPool(int i)
-        {           
+        {
             GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             SphereController spCtrl = sphere.AddComponent<SphereController>();
             sphere.name = "Farik" + i;
-            spCtrl.trans.localScale = new Vector3(sphereSize, sphereSize, sphereSize);          
+            spCtrl.trans.localScale = new Vector3(sphereSize, sphereSize, sphereSize);
             PushSphereToPool(spCtrl);
         }
 
@@ -61,16 +59,17 @@ namespace SpheresHunt
         }
 
         public void GetNextSphere()
-        {        
+        {
             if (0 == spPool.Count)
                 GenNewSphereToPool(gc.spBufferSize++);
-               
+
             SphereController spCtrl = spPool.Pop();
             spCtrl.trans.SetParent(spheresHolderTrans, false);
             spCtrl.trans.localPosition = new Vector3(Random.Range(0.0f, sphereSpawnGenSize.x), 0, Random.Range(0.0f, sphereSpawnGenSize.z));
 
             float normalizedDepth = spCtrl.trans.localPosition.z / sphereSpawnGenSize.z;
             spCtrl.speed = gc.baseSpeed + 6 * normalizedDepth;
+            spCtrl.angleSpeed = 90;
 
             int textureNum;
             if (normalizedDepth > 0.75) textureNum = Random.Range(0, 4);
