@@ -17,7 +17,7 @@ namespace SpheresHunt
         }
         #endregion
 
-        public Vector3 sceneSizes = new Vector3(50 * (4.0f / 5.0f) * (float)Screen.width / Screen.height, 60, 30);
+        public readonly Vector3 sceneSizes = new Vector3(50 * (4.0f / 5.0f) * (float)Screen.width / Screen.height, 60, 30);
         private Vector3 camPosition = new Vector3(0, 20, -34);
         public float sphereSize = 3;
         public int spBufferSize = 16;
@@ -26,7 +26,7 @@ namespace SpheresHunt
         private float timeScale = 1;
         private int texBufferSize = 16;
         public float sphereGenRate = 1.0f;
-        private string loadUrl = "file://Textures.unity3d";
+        private string assetFileName = "Textures.unity3d";
 
         private MyScene sc;
         private MyUI ui;
@@ -36,8 +36,6 @@ namespace SpheresHunt
         private int tempTimer = 0;
         public int score = 0;
         public int level = 0;
-
-
 
         void Awake()
         {
@@ -58,7 +56,7 @@ namespace SpheresHunt
             }
             #endregion
             sc = new MyScene(sceneSizes);
-            StartCoroutine(load(loadUrl, 1));
+            StartCoroutine(load(assetFileName, 1));
             sg = new SpheresGenerator(sceneSizes, sphereSize, texBufferSize);
             ui = new MyUI();
             cam = Camera.main;
@@ -128,14 +126,14 @@ namespace SpheresHunt
             }
         }
 
-        private IEnumerator load(string url, int version)
+        private IEnumerator load(string assetFileName, int version)
         {
             WWW www;
             Texture[] tex;
             Caching.CleanCache();
             while (!Caching.ready) yield return null;
 
-            www = WWW.LoadFromCacheOrDownload(url, version);
+            www = WWW.LoadFromCacheOrDownload("file:///" + Application.dataPath + "/../" + assetFileName, version);
             yield return www;
             if (www.error != null) throw new Exception("WWW download had an error: " + www.error);
 

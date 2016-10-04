@@ -15,6 +15,7 @@ namespace SpheresHunt
         private Texture[,] textures;
         private int texBufferSize;
         private float sphereSize;
+        private Material sphereMaterial = new Material(Shader.Find("Mobile/Diffuse"));
 
         public SpheresGenerator(Vector3 _sceneSizes, float _sphereSize, int _texBufferSize)
         {
@@ -46,6 +47,7 @@ namespace SpheresHunt
             sphere.name = "Farik" + i;
             spCtrl.trans.localScale = new Vector3(sphereSize, sphereSize, sphereSize);
             PushSphereToPool(spCtrl);
+            spCtrl.rend.material = sphereMaterial;
         }
 
         public void PushSphereToPool(SphereController spCtrl)

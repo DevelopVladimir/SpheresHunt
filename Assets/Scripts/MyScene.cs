@@ -4,7 +4,6 @@ using System.Collections;
 
 namespace SpheresHunt
 {
-
     public class MyScene
     {
         public GameObject Walls { get; private set; }
@@ -16,6 +15,8 @@ namespace SpheresHunt
         private float width;
         private float depth;
         private float height;
+
+        private Material material = new Material(Shader.Find("Mobile/Diffuse"));
 
         public MyScene(Vector3 sceneSizes)
         {
@@ -43,6 +44,7 @@ namespace SpheresHunt
             MeshRenderer meshRen = wall.GetComponent<MeshRenderer>();
             meshRen.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
             meshRen.receiveShadows = false;
+            meshRen.material = material;
             wall.name = name;
             trans = wall.transform;
             trans.SetParent(parentObjTrans, false);
